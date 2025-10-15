@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
 import styles from '../styles/styles';
 
-export default function ProductFormScreen({ navigation, route, products, setProducts }) {
+export default function ProductFormScreen({ navigation, route, products, setProducts, movements, setMovements }) {
   const editingProduct = route.params?.product;
 
   const [name, setName] = useState('');
@@ -41,6 +41,17 @@ export default function ProductFormScreen({ navigation, route, products, setProd
         price: safePrice,
       };
       setProducts([...products, newProduct]);
+
+      // Registra entrada automática no histórico
+      const newMovement = {
+        id: String(Date.now() + 1),
+        productName: name,
+        type: 'entrada',
+        quantity: safeQuantity,
+        justification: 'Produto adicionado',
+        date: new Date().toISOString(),
+      };
+      setMovements([newMovement, ...movements]);
     }
 
     navigation.goBack();
@@ -52,22 +63,14 @@ export default function ProductFormScreen({ navigation, route, products, setProd
       <TextInput style={styles.input} value={name} onChangeText={setName} />
 
       <Text>Quantidade</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={quantity}
-        onChangeText={setQuantity}
-      />
+      <TextInput style={styles.input} keyboardType="numeric" value={quantity} onChangeText={setQuantity} />
 
       <Text>Preço unitário</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={price}
-        onChangeText={setPrice}
-      />
+      <TextInput style={styles.input} keyboardType="numeric" value={price} onChangeText={setPrice} />
 
-      <Button title="Salvar" onPress={saveProduct} />
+      <TouchableOpacity style={styles.button} onPress={saveProduct}>
+        <Text style={styles.buttonText}>Salvar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
